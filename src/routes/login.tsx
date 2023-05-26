@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "mui-image";
-import { Container, Box } from "@mui/material";
+import { Container } from "@mui/material";
 import {
   createTheme,
   ThemeProvider,
@@ -8,15 +8,10 @@ import {
   ButtonBase,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import logo from "./asset/logo.png";
-import LoginToKakao from "./asset/LoginToKakao.png";
-import LoginToGoogle from "./asset/LoginToGoogle.png";
-import LoginToNaver from "./asset/LoginToNaver.png";
-
-import "./App.css";
-import { ClassNames } from "@emotion/react";
-import { Style } from "@mui/icons-material";
-import { yellow } from "@mui/material/colors";
+import logo from "../asset/logo.png";
+import LoginToKakao from "../asset/LoginToKakao.png";
+import LoginToGoogle from "../asset/LoginToGoogle.png";
+import LoginToNaver from "../asset/LoginToNaver.png";
 
 const theme = createTheme({
   typography: {
@@ -51,7 +46,7 @@ const LoginContainer = styled(Container)({
   marginLeft: "0",
 });
 
-function App() {
+export default function Login() {
   return (
     <ThemeProvider theme={theme}>
       <BodyContainer maxWidth="xl" className="App">
@@ -97,4 +92,10 @@ function App() {
   );
 }
 
-export default App;
+export async function loader() {
+  return null;
+}
+
+export async function action() {
+  return null;
+}
