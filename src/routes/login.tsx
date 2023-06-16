@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import Image from "mui-image";
 import { Container } from "@mui/material";
 import {
@@ -12,6 +12,8 @@ import logo from "../asset/logo.png";
 import LoginToKakao from "../asset/LoginToKakao.png";
 import LoginToGoogle from "../asset/LoginToGoogle.png";
 import LoginToNaver from "../asset/LoginToNaver.png";
+import { useNavigate } from "react-router-dom";
+import { Cookies } from "react-cookie";
 
 const theme = createTheme({
   typography: {
@@ -47,6 +49,76 @@ const LoginContainer = styled(Container)({
 });
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://developers.kakao.com/sdk/js/kakao.js";
+
+    const jsKey = "4620daa746ed1a3290f00b43f70095eb";
+
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      (window as any).Kakao.init(jsKey);
+    };
+    const loginLink = document.getElementById("kakao-login-link");
+    if (loginLink) {
+      loginLink.addEventListener("click", function (e) {
+        e.preventDefault(); // 링크 클릭 시 기본 동작 방지
+
+        (window as any).Kakao.Auth.loginForm({
+          scope: "profile_nickname, profile_image, account_email",
+          success: function () {
+            (window as any).Kakao.API.request({
+              url: "/v2/user/me",
+              success: function (authObj: any) {
+                // profile 정보 넘겨주기(form 으로 만들어서 post형식으로 보내기)
+
+                // Send the form data to the server using fetch or any other method
+                const formData = new FormData();
+
+                formData.append("name", authObj.kakao_account.profile.nickname);
+                formData.append("email", authObj.kakao_account.email);
+                formData.append(
+                  "profile_image_url",
+                  authObj.kakao_account.profile.profile_image_url
+                );
+                formData.append(
+                  "thumbnail_image_url",
+                  authObj.kakao_account.profile.thumbnail_image_url
+                );
+                formData.append("platform", "kakao");
+
+                fetch("http://172.20.10.3:5000/registerUser", {
+                  method: "POST",
+                  body: formData,
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    const cookies = new Cookies();
+                    cookies.set("user_id", data, { path: "/" });
+                    navigate("/");
+                  })
+                  .catch((error) => {
+                    // Handle any error that occurs during the request
+                    console.error(error);
+                  });
+              },
+            });
+          },
+          fail: function (error: any) {
+            console.log(error);
+          },
+        });
+      });
+    }
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
   return (
     <ThemeProvider theme={theme}>
       <BodyContainer maxWidth="xl" className="App">
@@ -69,6 +141,7 @@ export default function Login() {
         </Wrapper>
         <LoginContainer maxWidth="sm">
           <ButtonBase
+            id="kakao-login-link"
             sx={{ marginBottom: "20px" }}
             TouchRippleProps={{ style: { color: "#0093FF" } }}
           >
