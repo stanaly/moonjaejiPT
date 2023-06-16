@@ -4,7 +4,6 @@ import Explanation from "./explanation";
 import Memo from "./memo";
 
 // QuizBox1 : 객관식, 참/거짓
-
 const AnswerButtonGroup = ({
   texts,
   select,

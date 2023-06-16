@@ -83,15 +83,15 @@ export default function Quiz() {
       });
   };
 
-  const Reset = () => {
+  const Reset = async () => {
     // 리셋 함수
     setCondition(false);
-    setUserSelectList((prevUserSelectList: any) => {
-      const updatedQuizData = prevUserSelectList.map((question: any) => ({
-        ...question,
-        user_select: "",
-      }));
-      return updatedQuizData;
+    const quiz_id = location.state.quiz_id;
+    fetch(`http://172.20.10.3:5000/reset/${quiz_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   };
 
